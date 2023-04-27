@@ -7,10 +7,175 @@
 </head>
 <body>
 
-    <canvas id="canvas" height="720" width="720"></canvas>
-
+    <canvas id="canvas" height="1000" width="1000"></canvas>
+    <canvas id="canvas2" height="1000" width="1000"></canvas>
    <script>
-    let canvas = document.getElementById('canvas')
+
+    game("canvas",37,38,39,40, "black")
+    game("canvas2",65,87,68,83, "gray")
+   
+    function game(spieler, key1, key2, key3, key4, backGroundColor){
+    let canvas = document.getElementById(spieler)
+    let ctx = canvas.getContext('2d')
+    let cols = 30
+    let rows =30
+    let snake = [
+        {x:15, y:19},
+    ]
+    let food = {
+        x: 4, 
+        y:5
+    }
+    let cellWidth = canvas.width / cols
+    let cellHeight = canvas.height / rows
+    let direction = 'LEFT'
+    let foodCollected = false
+    let speed = 100
+
+    placeFood()
+
+    setInterval(gameLoop, speed)
+
+    document.addEventListener('keydown', keyDown)
+    
+    
+    draw()
+
+    function draw() {
+        ctx.fillStyle = backGroundColor
+        ctx.fillRect(0,0 ,canvas.width ,canvas.height)
+
+        ctx.fillStyle = 'green'
+
+        snake.forEach(part => add(part.x, part.y))
+       
+        ctx.fillStyle = 'red'
+        add(food.x, food.y)
+
+        requestAnimationFrame(draw)
+        
+    }
+
+    function gameOver(){
+
+        let firstPart = snake[0];
+        let otherParts = snake.slice(1);
+        let duplicatePart = otherParts.find(part => part.x == firstPart.x && part.y == firstPart.y);
+        
+        // 1. Schlange läuft gegen die Wand
+        if (snake[0].x < 0 ||
+                snake[0].x > cols - 1 ||
+                snake[0].y < 0 ||
+                snake[0].y > rows - 1 ||
+                duplicatePart
+            ) {
+                alert('Game Over')
+                placeFood();
+                snake = [{
+                    x: 15,
+                    y: 19
+                }];
+                direction = 'LEFT';
+            }
+
+
+    }
+
+    function win() {
+        let fields=cols * rows
+        if (fields - 1==snake.length){
+            alert('you won')
+        }
+    }
+
+    function placeFood(){
+        let randomX = Math.floor( Math.random() * cols)
+        let randomY = Math.floor( Math.random() * rows)
+
+        let wrongSpawn = snake.find(part => part.x == randomX && part.y == randomY)
+
+        if (wrongSpawn) {
+            placeFood()
+        } else {
+            food = {
+                x: randomX,
+                y: randomY
+            }
+           
+        }
+
+
+    }
+    
+    function keyDown(e) {
+        if (e.keyCode==key1){
+            direction = 'LEFT'
+           
+        }
+        if (e.keyCode==key2 ){
+            direction = 'UP'
+        }
+        if (e.keyCode==key3 ){
+            direction = 'RIGHT'
+        }
+        if (e.keyCode==key4){
+            direction = 'DOWN'
+        }
+    }
+
+    function add(x,y){
+        ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth -1,cellHeight -1)
+    
+    }
+
+    function shiftSnake() {
+        for (let i = snake.length - 1; i > 0 ; i--) {
+            const part = snake[i];
+            const lastPart = snake[i -1]
+            part.x = lastPart.x 
+            part.y = lastPart.y
+
+        }
+    }
+
+    function gameLoop(){
+        gameOver()
+        win()
+
+        console.log(speed)
+        
+        if(foodCollected) {
+            snake = [
+                {
+                    x: snake[0].x,
+                    y: snake[0].y
+                }, ...snake ]
+                foodCollected = false
+         }
+
+        shiftSnake()
+
+        if (direction == 'LEFT'){
+            snake[0].x--
+        }
+        if (direction == 'UP'){
+            snake[0].y--
+        }
+        if (direction == 'RIGHT'){
+            snake[0].x++
+        }
+        if (direction == 'DOWN'){
+            snake[0].y++
+        }
+
+        if(snake[0].x == food.x && snake[0].y == food.y){
+            foodCollected = true
+            placeFood()
+        }
+    }
+   }
+/*
+   let canvas = document.getElementById('canvas')
     let ctx = canvas.getContext('2d')
     let cols = 30
     let rows =30
@@ -168,6 +333,7 @@
             placeFood()
         }
     }
+*/
    </script>
 </body>
 </html>
