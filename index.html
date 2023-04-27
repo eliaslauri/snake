@@ -6,9 +6,11 @@
     <title>Document</title>
 </head>
 <body>
-
+    <h1>Elias</h1>
     <canvas id="canvas" height="1000" width="1000"></canvas>
     <canvas id="canvas2" height="1000" width="1000"></canvas>
+    <h3 id="counter1">Punkte: </h3>
+    <h3 id="counter2">Punkte: </h3>
    <script>
 
     game("canvas",65,87,68,83, "black")
@@ -141,6 +143,13 @@
     function gameLoop(){
         gameOver()
         win()
+
+        if(spieler == "canvas") {
+            counter1.innerText = `Punkte Player 1:${snake.length}`
+        }
+        if(spieler == "canvas2") {
+            counter2.innerText = `Punkte Player 2:${snake.length}`
+        }
 
         console.log(speed)
         
